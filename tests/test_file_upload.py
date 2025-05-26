@@ -135,3 +135,56 @@ def test_get_file_versions_filters_by_owner():
     file_names = [f["file_name"] for f in response.json()]
     assert "u1.txt" in file_names
     assert "u2.txt" not in file_names
+
+
+@pytest.mark.django_db
+def test_get_file_versions_by_parent_url_and_revision():
+    user = UserFactory(password="test123")
+    client = APIClient()
+    # Login and get token
+    response = client.post('/auth-token/', {
+        "username": user.email,
+        "password": "test123",
+    })
+    token = response.json()["token"]
+    client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+
+    parent_url = "/docs/rev.txt"
+    # Upload first version
+    file1 = io.BytesIO(b"first")
+    file1.name = "rev.txt"
+    client.post(
+        '/api/files/upload/',
+        {
+            "parent_url": parent_url,
+            "file": file1
+        },
+        format='multipart'
+    )
+    # Upload second version
+    file2 = io.BytesIO(b"second")
+    file2.name = "rev.txt"
+    client.post(
+        '/api/files/upload/',
+        {
+            "parent_url": parent_url,
+            "file": file2
+        },
+        format='multipart'
+    )
+
+    # GET all versions for this parent_url
+    resp_all = client.get('/api/file_versions/', {"parent_url": parent_url})
+    assert resp_all.status_code == 200
+    results = resp_all.json()
+    assert len(results) == 2
+    versions = [v["version_number"] for v in results]
+    assert set(versions) == {0, 1}
+
+    # GET specific revision
+    resp_rev1 = client.get('/api/file_versions/', {"parent_url": parent_url, "revision": 1})
+    assert resp_rev1.status_code == 200
+    results = resp_rev1.json()
+    assert len(results) == 1
+    assert results[0]["version_number"] == 1
+    assert results[0]["file_name"] == "rev.txt"
