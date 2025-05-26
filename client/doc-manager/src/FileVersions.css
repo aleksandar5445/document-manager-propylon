@@ -3,3 +3,42 @@
   padding: 20px;
   text-align: left;
 }
+
+.Header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  background-color: deepskyblue;
+  border-radius: 20px;
+}
+
+.buttonStartClass {
+  padding-inline: 30px;
+  padding-block: 10px;
+  background-color: deepskyblue;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.logoutButton {
+  display: flex;
+  justify-content: end;
+  padding-bottom: 20px;
+}
+
+.uploadFile {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.uploadFileInputs {
+  display: flex;
+  flex-direction: column;
+}

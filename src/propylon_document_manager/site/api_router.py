@@ -4,7 +4,8 @@ from django.urls import path
 from propylon_document_manager.file_versions.api.views import (
     FileUploadAPIView,
     FileDownloadAPIView,
-    FileVersionViewSet
+    FileVersionViewSet,
+    CustomAuthTokenView
 )
 
 
@@ -23,4 +24,5 @@ urlpatterns = router.urls
 urlpatterns += [
     path("files/upload/", FileUploadAPIView.as_view(), name="file-upload"),
     path("files/download/", FileDownloadAPIView.as_view(), name="file-download"),
+    path("auth-token/", CustomAuthTokenView.as_view(), name="custom-auth-token"),
 ]

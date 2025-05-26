@@ -1,3 +1,7 @@
+from rest_framework.authtoken.views import ObtainAuthToken
+from .serializers import CustomAuthTokenSerializer
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 from django.shortcuts import render
 from rest_framework.views import APIView
 from django.http import FileResponse, Http404
@@ -49,10 +53,14 @@ class FileUploadAPIView(APIView):
         if not parent_url or not file:
             return Response({'error': 'parent_url and file are required.'}, status=400)
 
-        file_name = file.name
 
         # Get latest version for this user/parent_url
         latest = FileVersion.objects.filter(owner=request.user, parent_url=parent_url).order_by('-version_number').first()
+
+        if latest and not latest.can_write:
+            return Response({'error': 'You do not have write permission for this file.'}, status=403)
+        
+        file_name = file.name
         version = (latest.version_number + 1) if latest else 0
 
         # Content hash (Content Addressable Storage)
@@ -94,6 +102,9 @@ class FileDownloadAPIView(APIView):
         file_version = qs.first()
         if not file_version or not file_version.file:
             raise Http404("File not found")
+        
+        if not file_version.can_read:
+            return Response({'error': 'You do not have read permission for this file.'}, status=403)
 
         response = FileResponse(
             file_version.file,
@@ -101,3 +112,20 @@ class FileDownloadAPIView(APIView):
             filename=file_version.file_name
         )
         return response
+
+
+class CustomAuthTokenView(ObtainAuthToken):
+    serializer_class = CustomAuthTokenSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = authenticate(
+            request,
+            username=serializer.validated_data['email'],
+            password=serializer.validated_data['password']
+        )
+        if not user:
+            return Response({'error': 'Invalid credentials'}, status=400)
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key})

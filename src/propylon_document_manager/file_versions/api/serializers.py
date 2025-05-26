@@ -6,3 +6,8 @@ class FileVersionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileVersion
         fields = "__all__"
+
+
+class CustomAuthTokenSerializer(serializers.Serializer):
+    email = serializers.EmailField(label="Email")
+    password = serializers.CharField(label="Password", style={'input_type': 'password'}, trim_whitespace=False)

@@ -68,6 +68,8 @@ class FileVersion(models.Model):
     parent_url = models.CharField(max_length=1024, null=True, blank=True)
     upload_time = models.DateTimeField(auto_now_add=True)
     content_hash = models.CharField(max_length=128, blank=True, null=True)
+    can_read = models.BooleanField(default=True, help_text="Can this file be read by the owner?")
+    can_write = models.BooleanField(default=True, help_text="Can this file be overwritten by the owner?")
 
     def __str__(self):
         return f"{self.file_name} (v{self.version_number}) - {self.owner.email}"

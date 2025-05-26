@@ -1,9 +1,11 @@
 .App {
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #282c34;
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 20vmin;
   pointer-events: none;
 }
 
@@ -14,14 +16,13 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 20px 10px;
 }
 
 .App-link {
@@ -35,4 +36,36 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.Login {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.Login-form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.Login-form input {
+  margin: 10px 0;
+  height: 40px;
+  padding: 0 10px;
+}
+
+.Login-button {
+  margin: 10px 0;
+  height: 40px;
+  background-color: #61dafb;
+  color: black;
+  border: none;
+  cursor: pointer;
 }

@@ -8,8 +8,8 @@ def test_authenticated_user_can_download_file():
     # Kreiraj user-a i uploaduj fajl
     user = UserFactory(password="testpass123")
     client = APIClient()
-    response = client.post('/auth-token/', {
-        "username": user.email,
+    response = client.post('/api/auth-token/', {
+        "email": user.email,
         "password": "testpass123",
     })
     token = response.json()["token"]

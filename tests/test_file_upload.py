@@ -13,8 +13,8 @@ def test_authenticated_user_can_upload_file():
 
     # 2. Login user and get token 
     client = APIClient()
-    response = client.post('/auth-token/', {
-        "username": user.email,
+    response = client.post('/api/auth-token/', {
+        "email": user.email,
         "password": "testpass123",
     })
     assert response.status_code == 200
@@ -64,8 +64,8 @@ def test_upload_unauthenticated_fails():
 def test_upload_twice_increments_version_number():
     user = UserFactory(password="testpass123")
     client = APIClient()
-    response = client.post('/auth-token/', {
-        "username": user.email,
+    response = client.post('/api/auth-token/', {
+        "email": user.email,
         "password": "testpass123",
     })
     token = response.json()["token"]
@@ -122,8 +122,8 @@ def test_get_file_versions_filters_by_owner():
     )
 
     client = APIClient()
-    response = client.post('/auth-token/', {
-        "username": user1.email,
+    response = client.post('/api/auth-token/', {
+        "email": user1.email,
         "password": "pass123",
     })
     token = response.json()["token"]
@@ -142,8 +142,8 @@ def test_get_file_versions_by_parent_url_and_revision():
     user = UserFactory(password="test123")
     client = APIClient()
     # Login and get token
-    response = client.post('/auth-token/', {
-        "username": user.email,
+    response = client.post('/api/auth-token/', {
+        "email": user.email,
         "password": "test123",
     })
     token = response.json()["token"]
