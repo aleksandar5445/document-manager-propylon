@@ -15,7 +15,6 @@ The Propylon Document Management Technical Assessment is a complete full-stack w
 - [Testing](#testing)
 - [Content Addressable Storage](#content-addressable-storage)
 - [Permissions](#permissions)
-- [Known Issues / Notes](#known-issues--notes)
 - [Credits](#credits)
 
 ---
@@ -183,30 +182,30 @@ pytest
 
 ---
 
-# Content Addressable Storage
+## Content Addressable Storage
 
-## Files are stored with their SHA-256 content hash, enabling:
+Files are stored with their SHA-256 content hash, enabling:
 
-## Integrity checks
-
-## Deduplication support
-
-## Retrieval by content-hash (extendable functionality)
+- **Integrity checks**
+- **Deduplication support**
+- **Retrieval by content-hash** (extendable functionality)
 
 ---
 
-# Permissions
+## Permissions
 
-## Each file version includes:
+Each file version includes:
 
-## can_read (default True): read access
+- **`can_read`** (default: `True`): Controls read access.
+- **`can_write`** (default: `True`): Controls write access (extendable permissions model).
 
-## can_write (default True): write access (extendable permissions model)
+---
 
-# Contact
+## Credits
 
-### For additional support or clarification, please reach out to:
+For additional support or clarification, please reach out to:
 
-### Aleksandar Dimitrov
+**Aleksandar Dimitrov**  
+Email: [dimitrov5445@gmail.com](mailto:dimitrov5445@gmail.com)
 
-### Email: dimitrov5445@gmail.com
+---
