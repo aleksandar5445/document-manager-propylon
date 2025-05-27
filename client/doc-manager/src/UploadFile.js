@@ -46,7 +46,7 @@ function UploadFile({ onUpload }) {
 
       // Reset file input polje
       if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        fileInputRef.current.value = null;
       }
 
       if (onUpload) onUpload();
@@ -68,6 +68,7 @@ function UploadFile({ onUpload }) {
             style={{ marginRight: 8, width: "300px", height: "30px", marginBottom: "10px" }}
           />
           <input
+            ref={fileInputRef}
             type="file"
             onChange={(e) => setFile(e.target.files[0])}
             style={{ marginRight: 8, }}

@@ -36,14 +36,23 @@ function FileVersionsList(props) {
   return file_versions.map((file_version) => (
     <div className="file-version" key={file_version.id}>
       <h2>File Name: {file_version.file_name}</h2>
-      <p>
-        ID: {file_version.id} Version: {file_version.version_number}
-      </p>
+      <div className="file-version-details">
+        <p>
+          ID: {file_version.id} Version: {file_version.version_number}
+        </p>
+        <p>
+          Parent URL: {file_version.parent_url}
+        </p>
+        <p>
+          Created At: {new Date(file_version.upload_time).toLocaleString()}
+        </p>
+      </div>
       <p>
         Read: {file_version.can_read ? "✅" : "❌"} |
         Write: {file_version.can_write ? "✅" : "❌"}
       </p>
       <button
+        className="buttonStartClass"
         onClick={() =>
           handleDownload(file_version.parent_url, file_version.version_number, file_version.file_name)
         }
