@@ -41,7 +41,7 @@ def test_authenticated_user_can_upload_file():
     data = response.json()
     assert data["file_name"] == "testfile.txt"
     assert data["parent_url"] == "/documents/tests/testfile.txt"
-    assert data["version_number"] == 0
+    assert data["version_number"] == 1
 
 # 6. Check if file is saved correctly with the correct owner 
 @pytest.mark.django_db
@@ -75,7 +75,7 @@ def test_upload_twice_increments_version_number():
     test_file.name = "versioned.txt"
     parent_url = "/documents/tests/versioned.txt"
 
-    # Prvi upload
+    # First upload should create version 1
     response1 = client.post(
         '/api/files/upload/',
         {
@@ -85,7 +85,7 @@ def test_upload_twice_increments_version_number():
         format='multipart'
     )
     assert response1.status_code == 201
-    assert response1.json()["version_number"] == 0
+    assert response1.json()["version_number"] == 1
 
     # Second upload should increment version number
     test_file2 = io.BytesIO(b"dummy data v2")
@@ -99,7 +99,7 @@ def test_upload_twice_increments_version_number():
         format='multipart'
     )
     assert response2.status_code == 201
-    assert response2.json()["version_number"] == 1
+    assert response2.json()["version_number"] == 2
 
 # Test cases for retrieving file versions 
 @pytest.mark.django_db
@@ -107,17 +107,17 @@ def test_get_file_versions_filters_by_owner():
     user1 = UserFactory(password="pass123")
     user2 = UserFactory(password="pass456")
 
-    # Dodaj file za oba usera
+    # Create file versions for both users
     fv1 = FileVersion.objects.create(
         owner=user1,
         file_name="u1.txt",
-        version_number=0,
+        version_number=1,
         parent_url="/docs/u1.txt"
     )
     fv2 = FileVersion.objects.create(
         owner=user2,
         file_name="u2.txt",
-        version_number=0,
+        version_number=1,
         parent_url="/docs/u2.txt"
     )
 
@@ -129,14 +129,14 @@ def test_get_file_versions_filters_by_owner():
     token = response.json()["token"]
     client.credentials(HTTP_AUTHORIZATION='Token ' + token)
 
-    # User1 sme da vidi samo svoj fajl
+    # User1 should only see their own file versions 
     response = client.get('/api/file_versions/')
     assert response.status_code == 200
     file_names = [f["file_name"] for f in response.json()]
     assert "u1.txt" in file_names
     assert "u2.txt" not in file_names
 
-
+# Test case for getting file versions by parent URL and revision
 @pytest.mark.django_db
 def test_get_file_versions_by_parent_url_and_revision():
     user = UserFactory(password="test123")
@@ -179,7 +179,7 @@ def test_get_file_versions_by_parent_url_and_revision():
     results = resp_all.json()
     assert len(results) == 2
     versions = [v["version_number"] for v in results]
-    assert set(versions) == {0, 1}
+    assert set(versions) == {1, 2}
 
     # GET specific revision
     resp_rev1 = client.get('/api/file_versions/', {"parent_url": parent_url, "revision": 1})

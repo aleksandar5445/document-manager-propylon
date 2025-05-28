@@ -1,6 +1,7 @@
 from rest_framework.authtoken.views import ObtainAuthToken
 from .serializers import CustomAuthTokenSerializer
 from django.contrib.auth import authenticate
+from django.db import transaction
 from rest_framework.authtoken.models import Token
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -52,35 +53,44 @@ class FileUploadAPIView(APIView):
         file = request.FILES.get('file')
         if not parent_url or not file:
             return Response({'error': 'parent_url and file are required.'}, status=400)
-
-
-        # Get latest version for this user/parent_url
-        latest = FileVersion.objects.filter(owner=request.user, parent_url=parent_url).order_by('-version_number').first()
-
-        if latest and not latest.can_write:
-            return Response({'error': 'You do not have write permission for this file.'}, status=403)
         
-        file_name = file.name
-        version = (latest.version_number + 1) if latest else 0
+        with transaction.atomic():
+            latest = (
+                FileVersion.objects.select_for_update()
+                .filter(owner=request.user, parent_url=parent_url)
+                .order_by('-version_number')
+                .first()
+            )
 
-        # Content hash (Content Addressable Storage)
-        file.seek(0)
-        content_hash = hashlib.sha256(file.read()).hexdigest()
-        file.seek(0)  # reset pointer!
+            if latest and not latest.can_write:
+                return Response({'error': 'You do not have write permission for this file.'}, status=403)
 
-        file_version = FileVersion.objects.create(
-            owner=request.user,
-            file_name=file_name,
-            version_number=version,
-            file=file,
-            parent_url=parent_url,
-            content_hash=content_hash,
-        )
+            file_name = file.name
+            version = (latest.version_number + 1) if latest else 1
+
+
+            file.seek(0)
+            content_hash = hashlib.sha256(file.read()).hexdigest()
+            file.seek(0)  # reset pointer!
+
+            file_version = FileVersion.objects.create(
+                owner=request.user,
+                file_name=file_name,
+                version_number=version,
+                file=file,
+                parent_url=parent_url,
+                content_hash=content_hash,
+            )
+
         serializer = FileVersionSerializer(file_version)
         return Response(serializer.data, status=201)
     
 
 class FileDownloadAPIView(APIView):
+    """
+    Download a file version by parent URL and optional revision number.
+    """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -115,6 +125,10 @@ class FileDownloadAPIView(APIView):
 
 
 class CustomAuthTokenView(ObtainAuthToken):
+    """
+    Custom authentication view to handle token generation with email and password.
+    """
+
     serializer_class = CustomAuthTokenSerializer
 
     def post(self, request, *args, **kwargs):

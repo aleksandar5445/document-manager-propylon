@@ -69,7 +69,7 @@ class FileVersionPermissionsAPITest(APITestCase):
         url_download = reverse("api:file-download")
         response = self.client.get(
             url_download,
-            {"parent_url": self.parent_url, "revision": 0},
+            {"parent_url": self.parent_url, "revision": 1},
             **self.api_auth_header
         )
         self.assertEqual(response.status_code, 403)
