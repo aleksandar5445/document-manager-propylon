@@ -1,70 +1,147 @@
-# Getting Started with Create React App
+# Propylon Document Manager — Frontend (React)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the React-based frontend application for the Propylon Document Manager Technical Assessment.
 
-## Available Scripts
+It provides a user-friendly interface to interact with the backend API built using Django and Django REST Framework, facilitating authentication, file uploads, listing file versions, and downloading specific files.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Table of Contents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [Features](#features)
+- [Getting Started](#getting-started)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+  - [Installation](#installation)
+  - [Running in Development Mode](#running-in-development-mode)
+  - [Building for Production](#building-for-production)
 
-### `npm test`
+- [Configuration](#configuration)
+- [Architecture & State Management](#architecture--state-management)
+- [Components Overview](#components-overview)
+- [API Integration](#api-integration)
+- [Credits](#credits)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Features
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Authentication:** Secure, token-based user authentication (email & password).
+- **File Uploads:** Upload files to user-specified paths (`parent_url`).
+- **File Versioning:** View a complete list of uploaded files and their multiple versions.
+- **File Downloads:** Easily download specific file versions.
+- **Permissions Display:** Clearly indicates read and write permissions per file.
+- **Global State Management:** Utilizes React Context API to manage state across components.
+- **Responsive & Accessible UI:** Simple, clear, and intuitive user interface.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Getting Started
 
-### `npm run eject`
+Follow these instructions to set up and run the React frontend locally.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Installation
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Prerequisites:** Ensure Node.js (v18.19.0 recommended) and npm are installed on your system.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. **Navigate to the React project directory:**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+cd client/doc-manager
+```
 
-## Learn More
+2. **Install frontend dependencies:**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm install
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+### Running in Development Mode
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Start the frontend development server:
 
-### Analyzing the Bundle Size
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+The application will open automatically at [http://localhost:3000](http://localhost:3000).
 
-### Making a Progressive Web App
+> **Important:** Ensure the backend API server is running at [http://localhost:8001](http://localhost:8001).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+### Building for Production
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+To build an optimized production-ready bundle:
 
-### Deployment
+```bash
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The output files will be generated in the `build/` directory.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Configuration
+
+- By default, the frontend expects the backend API to run at:
+
+```
+http://localhost:8001/api
+```
+
+- Adjust this endpoint in the file:
+
+```
+src/api/api.js
+```
+
+Specifically, change the value of:
+
+```javascript
+const API_BASE_URL = "http://localhost:8001/api";
+```
+
+---
+
+## Architecture & State Management
+
+- Built with React functional components and hooks.
+- Utilizes React Context API for global state management (authentication tokens, user state, file data, loading, and errors).
+- Clear separation of concerns between components, context, and API logic.
+
+---
+
+## Components Overview
+
+- **`App.js`**: Main component responsible for routing and app structure.
+- **`Login.js`**: Handles user authentication and token management.
+- **`FileVersions.js`**: Lists files, versions, permissions, and includes download actions.
+- **`UploadFile.js`**: Provides a form for uploading files.
+- **`AppContext.js`**: Global state management (authentication and file data context).
+- **`api/api.js`**: Service layer for API interactions (authentication, file management).
+
+---
+
+## API Integration
+
+API requests are centralized in `src/api/api.js`. Functions include:
+
+- `loginApi(email, password)` – authenticate and retrieve token.
+- `fetchFileVersions(token)` – get the user's file versions list.
+- `uploadFile(token, file, parentUrl)` – upload files.
+- `downloadFile(token, parentUrl, versionNumber)` – download a specific file version.
+
+All API calls (except login) require authentication.
+
+---
+
+## Credits
+
+For additional support or clarification, please reach out to:
+
+**Aleksandar Dimitrov**
+Email: [dimitrov5445@gmail.com](mailto:dimitrov5445@gmail.com)
+
+---

@@ -1,8 +1,15 @@
 import React, { useState, useContext, useRef } from "react";
-import { AuthContext } from "./AuthContext";
+import { AppContext } from "./AppContext";
+import { uploadFile } from "./api/api";
 
+/** 
+ * * UploadFile component allows users to upload files to a specified parent URL.
+ * * It includes a file input, a text input for the parent URL, and a submit button.
+ * * * Props:
+ * * - onUpload: callback function to be called after a successful upload (used to refresh the file list).
+*/
 function UploadFile({ onUpload }) {
-  const { token } = useContext(AuthContext);
+  const { token } = useContext(AppContext);
   const [file, setFile] = useState(null);
   const [parentUrl, setParentUrl] = useState("");
   const [status, setStatus] = useState("");
@@ -14,48 +21,33 @@ function UploadFile({ onUpload }) {
     setStatus("");
     setMessage("");
 
+    // Basic validation: ensure file and parentUrl are provided
     if (!file || !parentUrl) {
       setStatus("Select file and parent_url!");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("parent_url", parentUrl);
-
     try {
-      const response = await fetch("http://localhost:8001/api/files/upload/", {
-        method: "POST",
-        headers: {
-          Authorization: "Token " + token,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        setMessage(
-          errorData?.error || "Upload failed! Please try again."
-        );
-        return;
-      }
-
+      // Call the uploadFile function with the token, file, and parentUrl
+      await uploadFile(token, file, parentUrl);
       setMessage("Upload successful!");
       setParentUrl("");
       setFile(null);
 
-      // Reset file input polje
+      // Reset file input to allow re-uploading
       if (fileInputRef.current) {
         fileInputRef.current.value = null;
       }
 
+      // if provided, call the onUpload callback to refresh the file list
       if (onUpload) onUpload();
     } catch (error) {
-      setMessage("Upload failed due to network or server error.");
+      setMessage(error.message || "Upload failed! Please try again.");
       console.error("Upload error:", error);
     }
   };
 
+  // Render the upload form with input fields for parent URL and file selection
   return (
     <form onSubmit={handleSubmit} style={{ margin: "20px 0" }}>
       <div className="uploadFile">

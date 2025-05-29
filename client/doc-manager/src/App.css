@@ -2,6 +2,8 @@
   width: 100%;
   min-height: 100vh;
   background-color: #282c34;
+  display: flex;
+  justify-content: center;
 }
 
 .App-logo {
@@ -16,10 +18,9 @@
 }
 
 .App-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  min-width: 450px;
+  max-width: 1100px;
   font-size: calc(10px + 2vmin);
   color: white;
   padding: 20px 10px;

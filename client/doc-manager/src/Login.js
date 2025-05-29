@@ -1,30 +1,36 @@
 import React, { useState, useContext } from "react";
-import { AuthContext } from "./AuthContext";
 import './App.css';
+import { loginApi } from "./api/api";
+import { AppContext } from "./AppContext";
 
+/**
+ * Login component allows users to authenticate using their email and password.
+ * On successful login, it updates the authentication context with the new token.
+ */
 function Login() {
-  const { login } = useContext(AuthContext);
+  const { login } = useContext(AppContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
+  /**
+   * Handles form submission for user login.
+   * Calls the loginApi function, updates auth context, and handles errors.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     try {
-      const response = await fetch("http://localhost:8001/api/auth-token/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!response.ok) throw new Error("Login failed");
-      const data = await response.json();
+      // Call the API layer to authenticate the user
+      const data = await loginApi(email, password);
+      // Save the token to auth context
       login(data.token);
     } catch (err) {
       setError("Invalid email or password");
     }
   };
 
+  // Render the login form with inputs for email and password
   return (
     <form onSubmit={handleSubmit}>
       <div className="Login">
